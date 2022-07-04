@@ -52,8 +52,10 @@ function cameraToWorldOffset([camera_x, camera_y]) {
   return { x: Math.round(world_x), y: Math.round(world_y) };
 }
 
-function draw() {
-  // Keyboard controls!
+function checkKey(key) {
+  if (key == ' ') {
+    noiseSeed(millis());
+  }
   if (keyIsDown(LEFT_ARROW)) {
     camera_velocity.x -= 1;
   }
@@ -65,6 +67,13 @@ function draw() {
   }
   if (keyIsDown(UP_ARROW)) {
     camera_velocity.y -= 1;
+  }
+}
+
+function draw() {
+  // Keyboard controls! Changing to function
+  if (keyIsPressed) {
+    checkKey(key);
   }
 
   let camera_delta = new p5.Vector(0, 0);

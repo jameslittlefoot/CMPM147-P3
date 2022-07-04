@@ -14,9 +14,36 @@
     p3_drawAfter
 */
 
-function p3_preload() {}
+const tileSize = 16;
+const noiseScale = 0.1;
+const speed = 5;
+const buffer = 10;
+const images = [];
 
-function p3_setup() {}
+var x = 0;
+var y = 0;
+var w = 0;
+var h = 0;
+var xRO = 0; 
+var yRO = 0;
+var xTO = 0;
+var yTO = 0;
+var index = 0;
+
+const tiles = [];
+
+function preload() {
+  images.push(loadImage('water.png'));
+  images.push(loadImage('sand.png'));
+  images.push(loadImage('grass.png'));
+  images.push(loadImage('forest.png'));
+}
+
+function p3_setup() {
+  createCanvas(1080, 720);
+  w = width / tileSize + buffer;
+  h = height / tileSize + buffer;
+}
 
 let worldSeed;
 
@@ -41,29 +68,44 @@ function p3_tileClicked(i, j) {
   let key = [i, j];
   clicks[key] = 1 + (clicks[key] | 0);
   console.log(i, j);
+  console.log(images.length);
 }
 
 function p3_drawBefore() {}
 
+function getTile(x, y) {
+  let v = noise((xTO + x) * noiseScale, (yTO + y) * noiseScale);
+  let scales = [0.4, 0.5, 0.7, 1];
+  for (let i = 0; i < scales.length; i++) {
+    let terrainScale = scales[i];
+    if (v <= terrainScale) {
+      if(i != 3){
+        index = i+1;
+      }
+      else{
+        index = i-1;
+      }
+      return images[i];
+    }
+  }
+}
 function p3_drawTile(i, j) {
+  let img = getTile(i, j)
   noStroke();
-  fill(noise(i, j) * 255)
-
+  fill(noise(i, j) * 255);
+  
   push();
-
   beginShape();
   vertex(0, 0);
   vertex(0, tw);
   vertex(th, tw);
   vertex(th, 0);
   endShape(CLOSE);
-
+  image(img, 0 , 0 , 0)
   let n = clicks[[i, j]] | 0;
   if (n % 2 == 1) {
-    fill(255, 255, 0, 180);
-    ellipse(th/2, tw/2, 10, 10);
+    image(images[index], 0, 0, 0);
   }
-
   pop();
 }
 
